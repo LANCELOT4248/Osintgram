@@ -205,3 +205,30 @@ while True:
 
     if args.command:
         break
+
+
+try:
+    api.login(username, password)
+    print("Login successful!")
+    
+    # Configurar el dispositivo como confiable
+    api.set_trusted_device()
+    print("Device marked as trusted.")
+    
+except Exception as e:
+    if "two_factor_required" in str(e):
+        two_factor_identifier = e.two_factor_info["two_factor_identifier"]
+        verification_code = input("Enter the 2FA code from your authentication app: ")
+        
+        try:
+            api.two_factor_login(verification_code, two_factor_identifier)
+            print("2FA verification successful!")
+            
+            # Configurar el dispositivo como confiable
+            api.set_trusted_device()
+            print("Device marked as trusted.")
+            
+        except Exception as e:
+            print(f"2FA verification failed: {e}")
+    else:
+        print(f"Login failed: {e}")
